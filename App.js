@@ -71,12 +71,13 @@ export default class App extends React.Component {
 
   //save to camera func
   saveToCameraRoll = async (image) => {  
-    let cameraPermissions = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+    let cameraPermissions = await Expo.Permissions.getAsync(Expo.Permissions.CAMERA_ROLL);
     if (cameraPermissions.status !== 'granted') {
       cameraPermissions = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     }
 
     if (cameraPermissions.status === "granted") {
+      await CameraRoll.saveToCameraRoll(fileUrl, "photo");
       FileSystem.downloadAsync(
         image.urls.regular,
         FileSystem.documentDirectory + image.id + ".jpg"
