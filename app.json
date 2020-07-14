@@ -19,10 +19,6 @@
     "ios": {
       "supportsTablet": true
     },
-    "android": {
-      "package": "com.mindhunter.snapshot",
-      "versionCode": 1
-    },
     "web": {
       "favicon": "./assets/favicon.png"
     }
