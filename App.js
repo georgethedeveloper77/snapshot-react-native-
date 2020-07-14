@@ -10,11 +10,16 @@ import {
   Animated,
   TouchableWithoutFeedback,
   TouchableOpacity,
-  CameraRoll,
+  //CameraRoll,
   Share,
+  PermissionsAndroid,
+  Alert,
+  Platform,
 } from "react-native";
+import CameraRoll from '@react-native-community/cameraroll';
+import RNFetchBlob from 'rn-fetch-blob';
 
-import { Permissions, FileSystem } from "expo";  //ask per save to system
+//import { Permissions, FileSystem } from "expo";  //ask per save to system
 
 import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
@@ -70,28 +75,79 @@ export default class App extends React.Component {
   }
 
   //save to camera func
-  saveToCameraRoll = async (image) => {  
-    let cameraPermissions = await Expo.Permissions.getAsync(Expo.Permissions.CAMERA_ROLL);
-    if (cameraPermissions.status !== 'granted') {
-      cameraPermissions = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+  getPermissionAndroid = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Image Download Permission',
+          message: 'Your permission is required to save images to your device',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        return true;
+      }
+      Alert.alert(
+        'Save remote Image',
+        'Grant Me Permission to save Image',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+        {cancelable: false},
+      );
+    } catch (err) {
+      Alert.alert(
+        'Save remote Image',
+        'Failed to save Image: ' + err.message,
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+        {cancelable: false},
+      );
     }
+  };
 
-    if (cameraPermissions.status === "granted") {
-      await CameraRoll.saveToCameraRoll(fileUrl, "photo");
-      FileSystem.downloadAsync(
-        image.urls.regular,
-        FileSystem.documentDirectory + image.id + ".jpg"
-      )
-        .then(({ uri }) => {  //deconstruct image
-          CameraRoll.saveToCameraRoll(uri);
-          alert("Saved to photos");
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } else {
-      alert("Requires cameral roll permission");
+  handleDownload = async () => {
+    // if device is android you have to ensure you have permission
+    if (Platform.OS === 'android') {
+      const granted = await this.getPermissionAndroid();
+      if (!granted) {
+        return;
+      }
     }
+    this.setState({saving: true});
+    RNFetchBlob.config({
+      fileCache: true,
+      appendExt: 'png',
+    })
+      .fetch('GET', this.state.url)
+      .then(res => {
+        CameraRoll.saveToCameraRoll(res.data, 'photo')
+          .then(() => {
+            Alert.alert(
+              'Save remote Image',
+              'Image Saved Successfully',
+              [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+              {cancelable: false},
+            );
+          })
+          .catch(err => {
+            Alert.alert(
+              'Save remote Image',
+              'Failed to save Image: ' + err.message,
+              [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+              {cancelable: false},
+            );
+          })
+          .finally(() => this.setState({saving: false}));
+      })
+      .catch(error => {
+        this.setState({saving: false});
+        Alert.alert(
+          'Save remote Image',
+          'Failed to save Image: ' + error.message,
+          [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+          {cancelable: false},
+        );
+      });
   };
 
   showControls = (item) => {
@@ -191,7 +247,7 @@ export default class App extends React.Component {
           >
             <TouchableOpacity
               activeOpacity={0.5}
-              onPress={() => this.saveToCameraRoll(item)} //save to phone
+              onPress={() => this.handleDownload(item)} //save to phone
             >
               <Ionicons name="ios-cloud-download" color="blue" size={40} />
             </TouchableOpacity>
