@@ -72,7 +72,7 @@ export default class App extends React.Component {
   //save to camera func
   saveToCameraRoll = async (image) => {  
     let cameraPermissions = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-    if (cameraPermissions.status !== "granted") {
+    if (cameraPermissions.status !== 'granted') {
       cameraPermissions = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     }
 
@@ -138,7 +138,7 @@ export default class App extends React.Component {
             justifyContent: "center",
           }}
         >
-          <ActivityIndicator size="large" color="grey" />
+          <ActivityIndicator size="large" color="blue" />
         </View>
         <TouchableWithoutFeedback onPress={() => this.showControls(item)}>
           <Animated.View style={[{ height, width }, this.scale]}>
@@ -172,7 +172,7 @@ export default class App extends React.Component {
               activeOpacity={0.5}
               onPress={() => this.loadWallpapers()}
             >
-              <Ionicons name="ios-refresh" color="white" size={40} />
+              <Ionicons name="md-refresh" color="white" size={40} />
             </TouchableOpacity>
           </View>
           <View
@@ -182,7 +182,7 @@ export default class App extends React.Component {
               activeOpacity={0.5}
               onPress={() => this.shareWallpaper(item)}
             >
-              <Ionicons name="ios-share" color="green" size={40} />
+              <Ionicons name="md-share" color="green" size={40} />
             </TouchableOpacity>
           </View>
           <View
@@ -192,7 +192,7 @@ export default class App extends React.Component {
               activeOpacity={0.5}
               onPress={() => this.saveToCameraRoll(item)} //save to phone
             >
-              <Ionicons name="ios-save" color="blue" size={40} />
+              <Ionicons name="ios-cloud-download" color="blue" size={40} />
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -209,7 +209,7 @@ export default class App extends React.Component {
           justifyContent: "center",
         }}
       >
-        <ActivityIndicator size="large" color="grey" />
+        <ActivityIndicator size="large" color="blue" />
       </View>
     ) : (
       <View style={{ flex: 1, backgroundColor: "black" }}>
