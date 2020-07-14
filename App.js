@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   StyleSheet,
   Text,
@@ -11,14 +11,16 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   CameraRoll,
-  Share
-} from 'react-native';
+  Share,
+} from "react-native";
 
-import { Permissions, FileSystem } from 'expo';
+import { Permissions, FileSystem } from "expo";  //ask per save to system
 
-import axios from 'axios';
-import { Ionicons } from '@expo/vector-icons';
-const { height, width } = Dimensions.get('window');
+import axios from "axios";
+import { Ionicons } from "@expo/vector-icons";
+
+const { height, width } = Dimensions.get("window");
+
 export default class App extends React.Component {
   constructor() {
     super();
@@ -26,39 +28,40 @@ export default class App extends React.Component {
       isLoading: true,
       images: [],
       scale: new Animated.Value(1),
-      isImageFocused: false
+      isImageFocused: false,
     };
 
     this.scale = {
-      transform: [{ scale: this.state.scale }]
+      transform: [{ scale: this.state.scale }],
     };
 
+    //actionBar comes up when tapped
     this.actionBarY = this.state.scale.interpolate({
       inputRange: [0.9, 1],
-      outputRange: [0, -80]
+      outputRange: [0, -80],
     });
     this.borderRadius = this.state.scale.interpolate({
       inputRange: [0.9, 1],
-      outputRange: [30, 0]
+      outputRange: [30, 0],
     });
   }
 
   loadWallpapers = () => {
     axios
       .get(
-        'https://api.unsplash.com/photos/random?count=30&client_id=VvigN045zjZAli2uZnbSY61PllqBEn823eywR0-jJzU'
+        "https://api.unsplash.com/photos/random?count=30&client_id=VvigN045zjZAli2uZnbSY61PllqBEn823eywR0-jJzU"
       )
       .then(
-        function(response) {
+        function (response) {
           console.log(response.data);
           this.setState({ images: response.data, isLoading: false });
         }.bind(this)
       )
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
       })
-      .finally(function() {
-        console.log('request completed');
+      .finally(function () {
+        console.log("request completed");
       });
   };
 
@@ -66,52 +69,54 @@ export default class App extends React.Component {
     this.loadWallpapers();
   }
 
-  saveToCameraRoll = async image => {
+  //save to camera func
+  saveToCameraRoll = async (image) => {  
     let cameraPermissions = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-    if (cameraPermissions.status !== 'granted') {
+    if (cameraPermissions.status !== "granted") {
       cameraPermissions = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     }
 
-    if (cameraPermissions.status === 'granted') {
+    if (cameraPermissions.status === "granted") {
       FileSystem.downloadAsync(
         image.urls.regular,
-        FileSystem.documentDirectory + image.id + '.jpg'
+        FileSystem.documentDirectory + image.id + ".jpg"
       )
-        .then(({ uri }) => {
+        .then(({ uri }) => {  //deconstruct image
           CameraRoll.saveToCameraRoll(uri);
-          alert('Saved to photos');
+          alert("Saved to photos");
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     } else {
-      alert('Requires cameral roll permission');
+      alert("Requires cameral roll permission");
     }
   };
 
-  showControls = item => {
+  showControls = (item) => {
     this.setState(
-      state => ({
-        isImageFocused: !state.isImageFocused
+      (state) => ({
+        isImageFocused: !state.isImageFocused,
       }),
       () => {
         if (this.state.isImageFocused) {
           Animated.spring(this.state.scale, {
-            toValue: 0.9
+            toValue: 0.9,
           }).start();
         } else {
           Animated.spring(this.state.scale, {
-            toValue: 1
+            toValue: 1,
           }).start();
         }
       }
     );
   };
 
-  shareWallpaper = async image => {
+  //share image
+  shareWallpaper = async (image) => {
     try {
       await Share.share({
-        message: 'Checkout this wallpaper ' + image.urls.full
+        message: "Checkout this wallpaper " + image.urls.full,
       });
     } catch (error) {
       console.log(error);
@@ -123,14 +128,14 @@ export default class App extends React.Component {
       <View style={{ flex: 1 }}>
         <View
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'black',
-            alignItems: 'center',
-            justifyContent: 'center'
+            backgroundColor: "black",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <ActivityIndicator size="large" color="grey" />
@@ -142,7 +147,7 @@ export default class App extends React.Component {
                 flex: 1,
                 height: null,
                 width: null,
-                borderRadius: this.borderRadius
+                borderRadius: this.borderRadius,
               }}
               source={{ uri: item.urls.regular }}
             />
@@ -150,18 +155,18 @@ export default class App extends React.Component {
         </TouchableWithoutFeedback>
         <Animated.View
           style={{
-            position: 'absolute',
+            position: "absolute",
             left: 0,
             right: 0,
-            bottom: this.actionBarY,
+            bottom: this.actionBarY, //actionBar comes up when tapped
             height: 80,
-            backgroundColor: 'black',
-            flexDirection: 'row',
-            justifyContent: 'space-around'
+            backgroundColor: "black",
+            flexDirection: "row",
+            justifyContent: "space-around",
           }}
         >
           <View
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
             <TouchableOpacity
               activeOpacity={0.5}
@@ -171,23 +176,23 @@ export default class App extends React.Component {
             </TouchableOpacity>
           </View>
           <View
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
             <TouchableOpacity
               activeOpacity={0.5}
               onPress={() => this.shareWallpaper(item)}
             >
-              <Ionicons name="ios-share" color="white" size={40} />
+              <Ionicons name="ios-share" color="green" size={40} />
             </TouchableOpacity>
           </View>
           <View
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
             <TouchableOpacity
               activeOpacity={0.5}
-              onPress={() => this.saveToCameraRoll(item)}
+              onPress={() => this.saveToCameraRoll(item)} //save to phone
             >
-              <Ionicons name="ios-save" color="white" size={40} />
+              <Ionicons name="ios-save" color="blue" size={40} />
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -199,22 +204,22 @@ export default class App extends React.Component {
       <View
         style={{
           flex: 1,
-          backgroundColor: 'black',
-          alignItems: 'center',
-          justifyContent: 'center'
+          backgroundColor: "black",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <ActivityIndicator size="large" color="grey" />
       </View>
     ) : (
-      <View style={{ flex: 1, backgroundColor: 'black' }}>
+      <View style={{ flex: 1, backgroundColor: "black" }}>
         <FlatList
-          scrollEnabled={!this.state.isImageFocused}
+          scrollEnabled={!this.state.isImageFocused} //scroll
           horizontal
           pagingEnabled
           data={this.state.images}
           renderItem={this.renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id}
         />
       </View>
     );
@@ -224,8 +229,8 @@ export default class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
