@@ -15,13 +15,12 @@ import {
 } from "react-native";
 
 //import { Permissions, FileSystem } from "expo";  //ask per save to system
-import * as FileSystem from 'expo-file-system';
-import * as Permissions from 'expo-permissions'
-//import * as MediaLibrary from 'expo-media-library'
+import * as FileSystem from "expo-file-system";
+import * as Permissions from "expo-permissions";
+import * as MediaLibrary from "expo-media-library";
 
 import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
-
 
 const { height, width } = Dimensions.get("window");
 
@@ -74,9 +73,9 @@ export default class App extends React.Component {
   }
 
   //save to camera func
-  saveToCameraRoll = async (image) => {  
+  saveToCameraRoll = async (image) => {
     let cameraPermissions = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-    if (cameraPermissions.status !== 'granted') {
+    if (cameraPermissions.status !== "granted") {
       cameraPermissions = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     }
 
@@ -85,8 +84,10 @@ export default class App extends React.Component {
         image.urls.regular,
         FileSystem.documentDirectory + image.id + ".jpg"
       )
-        .then(({ uri }) => {  //deconstruct image
+        .then(({ uri }) => {
+          //deconstruct image
           CameraRoll.saveToCameraRoll(uri);
+          await MediaLibrary.saveToLibraryAsync(saveToCameraRoll.uri);
           alert("Saved to photos");
         })
         .catch((error) => {
