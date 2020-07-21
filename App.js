@@ -87,7 +87,7 @@ export default class App extends React.Component {
         .then(({ uri }) => {
           //deconstruct image
           //CameraRoll.saveToCameraRoll(uri, 'photo')
-          MediaLibrary.saveToLibraryAsync(localUri)
+          MediaLibrary.saveToLibraryAsync(uri)
           //const asset = await MediaLibrary.createAssetAsync(uri)
           //await MediaLibrary.createAlbumAsync("Download", asset, false)
           alert("Saved to photos");
