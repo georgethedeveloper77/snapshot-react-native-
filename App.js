@@ -90,7 +90,7 @@ export default class App extends React.Component {
           MediaLibrary.saveToLibraryAsync(uri)
           //const asset = await MediaLibrary.createAssetAsync(uri)
           //await MediaLibrary.createAlbumAsync("Download", asset, false)
-          alert("Saved to photos");
+          alert("Saved to Gallery...DCIM");
         })
         .catch((error) => {
           console.log(error);
